@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Teacher {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    name      String
+    darkmode  Boolean  @default(true)
+    QCMs      QCM[]
+    createdAt DateTime @default(now())
+}
+
+model Student {
+    id        Int      @id @default(autoincrement())
+    firstName String
+    lastName  String
+    grade     String
+    answers   Answer[]
+    createdAt DateTime @default(now())
+    QCM       QCM[]
+}
+
+enum QcmType {
+    AllQuestionsShown
+    OneByOne
+}
+
+enum QuestionType {
+    TrueOrFalse
+    MultipleChoices
+    Number
+    Text
+    PythonCode
+}
+
+enum CheatAction {
+    AllowCheat
+    ValidateAnswers
+    NotifyOnly
+}
+
+model Question {
+    id             Int          @id @default(autoincrement())
+    question       String
+    type           QuestionType
+    QCMid          Int
+    QCM            QCM          @relation(fields: [QCMid], references: [id])
+    correctAnswers Json?
+    answers        Answer[]
+    showAnswer     Boolean?     @default(true)
+    time           Int?
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
+}
+
+model Answer {
+    id          Int       @id @default(autoincrement())
+    answer      Json
+    correct     Boolean?
+    question    Question  @relation(fields: [questionId], references: [id])
+    questionId  Int
+    studentId   Int
+    student     Student   @relation(fields: [studentId], references: [id])
+    answeredAt  DateTime  @default(now())
+    correctedAt DateTime?
+}
+
+model QCM {
+    id                Int        @id @default(autoincrement())
+    name              String
+    type              QcmType
+    questions         Question[]
+    allowPrevQuestion Boolean?   @default(true)
+    cheatAction       CheatAction
+    teacherId         Int
+    teacher           Teacher    @relation(fields: [teacherId], references: [id])
+    createdAt         DateTime   @default(now())
+    updatedAt         DateTime   @updatedAt
+    Student           Student?   @relation(fields: [studentId], references: [id])
+    studentId         Int?
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>AwesomeQCMs</title>
+</head>
+<body class="text-light">
+<div id="universe"></div>
+<div id="qcmLogin">
+    <form id="qcmLoginForm">
+        <div class="mb-3">
+            <label class="form-label" for="qcmCode">Code du QCM</label>
+            <input class="form-control bg-dark text-light" id="qcmCode" type="text">
+            <div class="form-text" id="codeHelp">Affiché au tableau ou donné par le professeur</div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="firstName">Nom</label>
+            <input class="form-control bg-dark text-light" id="firstName" type="text">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="lastName">Prénom</label>
+            <input class="form-control bg-dark text-light" id="lastName" type="text">
+        </div>
+        <div class="mb-3 form-check">
+            <input class="form-check-input bg-dark" id="lightMode" type="checkbox"
+                   onchange="alert(`Error : Will Never Be Implemented\n\nNote :\nLe sadomasochisme n'est pas recommandé !`);document.getElementById('lightMode').checked = false">
+            <label class="form-check-label" for="lightMode">Mode Clair</label>
+        </div>
+        <div class="d-grid">
+            <button class="btn btn-primary" type="button" id="joinQcm">Rejoindre</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
