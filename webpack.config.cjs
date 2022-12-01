@@ -22,7 +22,8 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     dev ? "style-loader" : MiniCSSExtractPlugin.loader,
-                    "css-loader"
+                    "css-loader",
+                    "postcss-loader"
                 ].concat(dev ? [] : ["postcss-loader"]),
                 sideEffects: true
             },

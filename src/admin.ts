@@ -66,8 +66,17 @@ export default function (db: PrismaClient, io: Namespace): Router {
     // TODO: Implement Authentication
 
     router.get('/', (req, res) => {
-        res.send('Hello World, from Admin !')
+        res.redirect('/admin/login')
     })
+
+    router.get('/:page', (req, res, next) => {
+        if (['logout'].includes(req.params.page)) next()
+        res.render('admin', {
+            page: req.params.page,
+        })
+    })
+
+    //TODO: GET /login with google login
 
     router.get('/logout', (req, res) => {
         const sessionId = req.session.id
