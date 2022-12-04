@@ -1,63 +1,52 @@
-import { io, Socket } from "socket.io-client";
+import { io, Socket } from 'socket.io-client'
 
 // Load Bootstrap CSS & JS
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.bundle.js";
-// Load Notyf
-import { Notyf } from "notyf";
-import "notyf/notyf.min.css";
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap.bundle.js'
 
+// Load Notyf
+import getNotyf from './notyf.js'
 // Load Galaxy Background
-import "./galaxy.js";
+import './galaxy.js'
 
 // Load Custom CSS
-import "../css/index.css";
+import '../css/index.css'
+
+const notyf = getNotyf()
 
 // Load FontAwesome
 //import '@fortawesome/fontawesome-free/css/all.css'
 import(/* webpackPreload: true */ '@fortawesome/fontawesome-free/js/all.js')
+
+if (window.location.hash === '#admin-logout-success') {
+    notyf.success({
+        message: 'Déconnexion réussie !',
+        duration: 5000,
+    })
+    window.location.hash = ''
+}
 
 /**
  * @type {Socket}
  */
 let socket = io({ transports: ['websocket'], autoConnect: false })
 
-const notyf = new Notyf({
-    dismissible: true,
-    duration: 2500,
-    position: {
-        x: 'right',
-        y: 'top',
-    },
-    ripple: true, // Appear/Disappear Animation
-    types: [
-        {
-            type: 'error',
-            icon: {
-                className: 'fa-solid fa-circle-xmark',
-                tagName: 'i',
-                color: 'white',
-            },
-        },
-        {
-            type: 'success',
-            icon: {
-                className: 'fa-solid fa-circle-check',
-                tagName: 'i',
-                color: 'white',
-            },
-        },
-        {
-            type: 'loading',
-            icon: {
-                className: 'fa-solid fa-cog fa-spin',
-                tagName: 'i',
-                color: 'white',
-            },
-            background: 'orangered',
-        },
-    ],
-})
+let turnstileToken = null
+let turnstileWidgetId = null
+
+const qcmCodeField = document.getElementById('qcmCode')
+const firstNameField = document.getElementById('firstName')
+const lastNameField = document.getElementById('lastName')
+const joinButton = document.getElementById('joinQcm')
+
+function getConnectionData() {
+    return {
+        qcmCode: qcmCodeField.value,
+        firstName: firstNameField.value,
+        lastName: lastNameField.value,
+        turnstileToken: turnstileToken,
+    }
+}
 
 /**
  * @param {Element} elem
@@ -95,13 +84,11 @@ function isFormValid() {
     validateQcmCode({ target: qcmCodeField })
     validateFirstName({ target: firstNameField })
     validateLastName({ target: lastNameField })
-    return document.querySelectorAll('.is-invalid').length === 0
+    return (
+        document.querySelectorAll('.is-invalid').length === 0 &&
+        turnstileToken !== null
+    )
 }
-
-const qcmCodeField = document.getElementById('qcmCode')
-const firstNameField = document.getElementById('firstName')
-const lastNameField = document.getElementById('lastName')
-const joinButton = document.getElementById('joinQcm')
 
 qcmCodeField.addEventListener('focus', validateQcmCode)
 qcmCodeField.addEventListener('keydown', validateQcmCode)
@@ -142,14 +129,30 @@ joinButton.addEventListener('click', async (event) => {
         if (validCode) {
             notyf.success('Connecté au QCM !')
             //TODO Hide Form (div#qcmLogin) and show loader with "En attente du démarrage du QCM..."
+            turnstile.remove(turnstileWidgetId)
         } else {
             notyf.error('Code QCM incorrect !')
             qcmCodeField.value = ''
             qcmCodeField.classList.remove('is-valid')
             qcmCodeField.classList.add('is-invalid')
+            turnstile.reset(turnstileWidgetId)
         }
         restoreState()
     })
-
+    socket.auth = (cb) => cb(getConnectionData())
     socket.connect()
 })
+
+window.onloadTurnstileCallback = () => {
+    turnstileWidgetId = turnstile.render(
+        document.getElementById('turnstileContainer'),
+        {
+            sitekey: process.env.TURNSTILE_SITE_KEY,
+            theme: 'dark',
+            size: 'normal',
+            callback: (token) => {
+                turnstileToken = token
+            },
+        }
+    )
+}

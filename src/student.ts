@@ -11,6 +11,9 @@ function getPath(filePath: string): string {
     return path.join(__dirname, 'web', filePath)
 }
 
+//TODO: Verify the Turnstile Token with Cloudflare
+// https://developers.cloudflare.com/turnstile/get-started/server-side-validation/
+
 export default function (db: PrismaClient, io: Namespace): Router {
     const router = Router()
 

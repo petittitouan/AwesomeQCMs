@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 const dev = process.argv[process.argv.indexOf("--mode") + 1] === "development";
 
 module.exports = {
@@ -46,6 +47,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new Dotenv(),
         new HtmlWebpackPlugin({
             template: "./web/index.html",
             filename: "../index.html",

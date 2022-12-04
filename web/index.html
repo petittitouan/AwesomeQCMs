@@ -21,10 +21,12 @@
             <label class="form-label" for="lastName">Prénom</label>
             <input class="form-control bg-dark text-light" id="lastName" type="text">
         </div>
+        <div class="mb-3" id="turnstileContainer"></div>
         <div class="d-grid">
             <button class="btn btn-primary" type="button" id="joinQcm">Rejoindre</button>
         </div>
     </form>
 </div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" async defer></script>
 </body>
 </html>

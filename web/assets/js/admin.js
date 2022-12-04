@@ -1,5 +1,4 @@
 import "../css/admin.css";
-import Alpine from "alpinejs";
 import { io, Socket } from "socket.io-client";
 
 // Load FontAwesome
@@ -14,9 +13,13 @@ let socket = io('/admin', {
     autoConnect: false,
 })
 
-if (connect) {
+if (connectSocket) {
     socket.connect()
 }
 
-window.Alpine = Alpine
-Alpine.start()
+switch (page) {
+    case 'login':
+        import(/* webpackPrefetch: true */ './admin/login.js')
+    case 'dashboard':
+        import(/* webpackPrefetch: true */ './admin/dashboard.js')
+}
